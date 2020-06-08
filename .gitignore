@@ -1,0 +1,10 @@
+# Caches -----------------------------------------------------------------------
+**/__pycache__
+# Mypy
+/.mypy_cache
+
+# Documentation Build ----------------------------------------------------------
+/docs/build
+
+# Jupyter Notebooks Checkpoints ------------------------------------------------
+.ipynb_checkpoints
