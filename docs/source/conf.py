@@ -28,6 +28,7 @@ release = "v0.1.0"
 
 
 # -- General configuration ---------------------------------------------------
+add_module_names = False
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -35,12 +36,16 @@ release = "v0.1.0"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
+    "sphinx.ext.intersphinx",
     "sphinx_rtd_theme",
 ]
 
 # Add extension settings here.
-add_module_names = False
-
+autodoc_member_order = "bysource"
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/dev", None),
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -58,7 +63,7 @@ exclude_patterns = []
 #
 html_theme = "sphinx_rtd_theme"
 html_logo = "_static/basket_logo.svg"
-html_favicon = "_static/basket_logo.svg"
+html_favicon = "_static/basket_logo_orange.svg"
 html_theme_options = {
     "style_nav_header_background": "#FF9C34",
 }
