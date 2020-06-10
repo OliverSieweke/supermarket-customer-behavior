@@ -10,6 +10,8 @@ Welcome to Supermarket Customer Behavior's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   data
+   paths
 
 
 Indices and tables

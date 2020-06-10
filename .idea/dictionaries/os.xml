@@ -3,17 +3,22 @@
     <words>
       <w>autodoc</w>
       <w>builddir</w>
+      <w>bysource</w>
       <w>cobertura</w>
+      <w>dataframe</w>
       <w>dependabot</w>
       <w>errorlevel</w>
       <w>exprs</w>
       <w>genindex</w>
+      <w>intersphinx</w>
       <w>linecount</w>
       <w>linecoverage</w>
       <w>lineprecision</w>
+      <w>meth</w>
       <w>modindex</w>
       <w>mypy</w>
       <w>noninfringement</w>
+      <w>pathlib</w>
       <w>popd</w>
       <w>pushd</w>
       <w>pylint</w>
