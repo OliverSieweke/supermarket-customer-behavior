@@ -8,10 +8,10 @@ Welcome to Supermarket Customer Behavior's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
-   data
    paths
+   data
+   model
 
 
 Indices and tables

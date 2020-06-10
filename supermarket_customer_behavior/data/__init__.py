@@ -7,7 +7,7 @@ This module provides utility methods for manipulating the original data.
 
 # Standard Library ---------------------------------------------------------------------
 import collections
-from typing import Iterable, Union
+from typing import Callable, Iterable, Literal, Union
 
 # Data Science -------------------------------------------------------------------------
 import pandas as pd
@@ -62,6 +62,83 @@ def load_all() -> pd.DataFrame:
     return pd.concat(
         [load_day(day, prefix_customer_no=True) for day in WeekDay], axis="index"
     ).reset_index(drop=True)
+
+
+def get_entrance_location(
+    kind: Literal["entry", "exit"]
+) -> Callable[[pd.Series], pd.Series]:
+    """Return a transformer that converts a location into an entrance location.
+
+    A customer is assumed to be at the entrance 1 minute before his
+    first and 1 minute after his last appearance.
+
+    Parameters
+    ----------
+    kind
+        "entry" or "exit".
+
+    Returns
+    -------
+    :class:`pandas.Series`
+        Entrance location row for customer entry or exit. E.g::
+
+            timestamp            customer_no  location  entry  exit   customer_count_change
+            -------------------  -----------  --------  -----  -----  ---------------------
+            2019-09-02 07:02:00            1  entrance  True    False                     1
+    """
+
+    def transformer(row: pd.Series) -> pd.Series:
+        row["timestamp"] = row["timestamp"] + pd.Timedelta(minutes=1) * (
+            -1 if kind == "entry" else 1
+        )
+        row["location"] = "entrance"
+        row["entry"] = kind == "entry"
+        row["exit"] = kind == "exit"
+        row["customer_count_change"] = 1 if kind == "entry" else -1
+        return row
+
+    return transformer
+
+
+def add_entrance_location(df: pd.DataFrame) -> pd.DataFrame:
+    """Add entrance location rows for customer entry and exit.
+
+    A customer is assumed to be at the entrance 1 minute before his
+    first and 1 minute after his last appearance.
+
+    Parameters
+    ----------
+    df
+        Dataframe containing at least the ``timestamp`` and
+        ``customer_no``, ``location``, ``entry``, ``exit`` and
+        ``customer_count_change`` columns.
+
+    Notes
+    -----
+    The ``entry``, ``exit`` and ``customer_count_change`` columns can be
+    obtained through :func:`add_entry_exit`.
+
+    Returns
+    -------
+    :class:`pandas.DataFrame`
+        Dataframe with added rows for the entrance location. E.g::
+
+            timestamp            customer_no  location  entry  exit   customer_count_change
+            -------------------  -----------  --------  -----  -----  ---------------------
+            2019-09-02 07:02:00            1  entrance  True   False                      1
+            2019-09-02 07:03:00            1  dairy     False  False                      0
+            2019-09-02 07:05:00            1  checkout  False  False                      0
+            2019-09-02 07:06:00            1  entrance  False  True                      -1
+    """
+    entrance_on_entry = df[df["entry"]].apply(get_entrance_location("entry"), axis=1)
+    entrance_on_exit = df[df["exit"]].apply(get_entrance_location("exit"), axis=1)
+
+    # The relevant entry, exit and customer_count_change values now
+    # appear in the newly created entrance rows:
+    df[["entry", "exit"]] = False
+    df["customer_count_change"] = 0
+
+    return df.append([entrance_on_entry, entrance_on_exit]).sort_values(by="timestamp")
 
 
 def add_entry_exit(df: pd.DataFrame) -> pd.DataFrame:
